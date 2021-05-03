@@ -16,10 +16,9 @@ void make_move(char board[][SIZE], int row, int col, char player);
 void move_choose(char player);
 int countPiecesBlack();
 int countPiecesWhite();
-int validateMove(char board[][SIZE], bool avail_moves[][SIZE], char player);
-int validateActualMoveChosen(char board[][SIZE], int row, int col, char player);
-bool available_moves[SIZE][SIZE] = {false};
-///bool available_moves[SIZE][SIZE];
+int validateMove(char board[][SIZE], char player);
+///bool available_moves[SIZE][SIZE] = {false};
+bool available_moves[SIZE][SIZE];// they all get initialized to false in validateMove function
 void goPlayer1();
 void goPlayer2();
 
@@ -49,7 +48,6 @@ struct game{
 int main() {
     event.p1_c = 'B';            // Player 1 is black and Player 2 is White
     event.p2_c = 'W';
-    bool moves[SIZE][SIZE] = { false };
     start_game();
     display(Othello.othello);
 
@@ -68,7 +66,7 @@ int main() {
             // player 2 also cant make any move; both players validate move function returns 0. And visa versa.
             // Or, while both players scores are above 0 and not equal to 0, it could have ended because both players
             // just cant make any moves. So this instance, the game ends in a draw.
-        if((validateMove(Othello.othello, moves, event.p1_c)) == 0 && (validateMove(Othello.othello, moves, event.p2_c)) == 0){
+        if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0){
             if(event.scorePlayer1 == 0 ){
                 printf("Game ends because %s has 0 pieces left!! (#1 break)\n", event.player1Name);
                 break;
@@ -87,7 +85,7 @@ int main() {
 
         // Once again, just like above, the same checks have to be used to see if the game has now ended on that specific move \
         // just made by player 2. So go through same checks again.
-        if((validateMove(Othello.othello, moves, event.p1_c)) == 0 && (validateMove(Othello.othello, moves, event.p2_c)) == 0){
+        if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0){
             if(event.scorePlayer1 == 0 ){
                 printf("Game ends because %s has 0 pieces left!! (#4 break)\n", event.player1Name);
                 break;
@@ -108,7 +106,7 @@ int main() {
     display(Othello.othello);
     printf("END OF GAME!! WELL PLAYED TO BOTH PLAYERS\n");
     printf("Black has %d pieces and white has %d pieces\n", event.scorePlayer1, event.scorePlayer2);
-    // Then work out who won. WHichever players score is higher, wins.
+    // Then work out who won. Whichever players score is higher, wins.
     // If both players scores are equal, the game ends in a draw.
     if(event.scorePlayer1>event.scorePlayer2){
         printf("Congratulations!! %s has won the game with %d tokens\n", event.player1Name, event.scorePlayer1);
@@ -192,15 +190,14 @@ void display(char board[][SIZE])// display the board function
     // print the botton line.
     printf("   ");
     for(int i = 0;i < 8;i++){
-        printf("--- ");// print --- for the botom of the board.
+        printf("--- ");// print --- for the botttom of the board.
     }
     printf("\n");
 }
 
 void goPlayer1(){
-    bool moves[SIZE][SIZE] = { false };
     // This is just a ssmall extra feature that just tells the user how many available moves they can make!!
-    printf("%s You have %d moves available\n", event.player1Name, validateMove(Othello.othello, moves, event.p1_c));
+    printf("%s You have %d moves available\n", event.player1Name, validateMove(Othello.othello, event.p1_c));
     // validate move returns an integer of the number of moves available. If it returns 0, there is no moves available
 
     // THis if statement below is basically the "pass" aspect of Othello. THe computer does the pass for the user/player
@@ -214,7 +211,7 @@ void goPlayer1(){
     // SO we add in the part of the check:
     // "&& (validateMove(Othello.othello, moves, event.p2_c)) != 0 )"
     // to make sure that available moves for the other player exist.
-    if((validateMove(Othello.othello, moves, event.p1_c)) == 0 && (validateMove(Othello.othello, moves, event.p2_c)) != 0 ){// while....  != true
+    if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) != 0 ){// while....  != true
         printf("There is no available moves for %s!! SO, %s will be skipped\n", event.player1Name, event.player1Name);
         printf("It is now %s's turn\n", event.player2Name);
         goPlayer2();
@@ -242,8 +239,7 @@ void goPlayer1(){
 }
 
 void goPlayer2(){
-    bool moves[SIZE][SIZE] = { false };
-    printf("%s You have %d moves available\n", event.player2Name, validateMove(Othello.othello, moves, event.p2_c));
+    printf("%s You have %d moves available\n", event.player2Name, validateMove(Othello.othello, event.p2_c));
 
     // THis if statement below is basically the "pass" aspect of Othello. THe computer does the pass for the user/player
     // so that there is no confusion. So if a player cant go, they are passed, and the next player plays again.
@@ -256,7 +252,7 @@ void goPlayer2(){
     // SO we add in the part of the check:
     // "&& (validateMove(Othello.othello, moves, event.p1_c)) != 0 )"
     // to make sure that available moves for the other player exist.
-    if((validateMove(Othello.othello, moves, event.p2_c)) == 0 && (validateMove(Othello.othello, moves, event.p1_c)) != 0){// while....  != true
+    if((validateMove(Othello.othello, event.p2_c)) == 0 && (validateMove(Othello.othello, event.p1_c)) != 0){// while....  != true
         printf("There is no available moves for %s!! SO, %s will be skipped\n", event.player2Name, event.player2Name);
         printf("It is now %s's turn\n", event.player1Name);
         goPlayer1();
@@ -411,7 +407,7 @@ void make_move(char board[][SIZE], int row, int col, char player)// this functio
                         //This is to keep the x and y values unchanged.
                         // So go bakwards from the move made and minus the increments to see if the change variables need to
                         // be changed to the player character.
-                        ///while(board[x -= rowIncrement][y -= colIncrement] == myOpponent)
+
                         while(board[change_x][change_y] == myOpponent){  // if the position(x and y minus the increments) is = to opponent then: change it:
                             printf("THIS IS A VALID MOVE\n");
                             printf("change_x is (%d)\n", change_x);
@@ -441,12 +437,12 @@ void make_move(char board[][SIZE], int row, int col, char player)// this functio
     }
 }
 
-int validateMove(char board[][SIZE], bool avail_moves[][SIZE], char player){// this function is very similar to the above,
+int validateMove(char board[][SIZE], char player){// this function is very similar to the above,
     // make_move function in that it uses the same thinking to count up all the possible valid moves there is to make for player.
     // It returns an integer representing the number of moves available for the player.
     // But, it also initializes all the available moves that there is to that player to true under the global variable
     // name, available_moves. For instance, all 64 squares will be initialized to false and then when a valid move pops up,
-    // that specific square on the board, (Ohello.othello) will be set to true. So that
+    // that specific square on the board, (Ohello.othello), will be set to true. So that
     // when validating a move in the main function, if a move of a certain position (that entered by the user)
     // is true under available_moves, then that move is validated.
     // If it is false under available_moves, then that means its not a valid move, so then the user would have to enter
@@ -470,7 +466,6 @@ int validateMove(char board[][SIZE], bool avail_moves[][SIZE], char player){// t
     // make all moves to false. ie. no available moves
     for(int row = 0; row<SIZE; row++){
         for(int col = 0; col<SIZE; col++){
-            avail_moves[row][col]=false;
             available_moves[row][col] = false;
         }
     }
@@ -513,7 +508,8 @@ int validateMove(char board[][SIZE], bool avail_moves[][SIZE], char player){// t
 
 
                             if (board[x][y] == player) {
-                                avail_moves[row][col] = true;
+                                // Most important part is available_moves. If this isnt set to true, we wont know what moves
+                                // are actually available as all moves will still be set to false.
                                 available_moves[row][col] = true;// gloval variable available_moves of row and col = true
                                 moveCounter++;// its an available move so increment the moveCounter.
                                 ///return true;
@@ -535,128 +531,65 @@ int validateMove(char board[][SIZE], bool avail_moves[][SIZE], char player){// t
     return moveCounter;// moveCounter will be the number of moves available to the player.
 }
 
-int validateActualMoveChosen(char board[][SIZE], int row, int col, char player){
-    int x =0, y=0;
-
-    char myOpponent;// the character to see who the opposition is. If make_move is being run with p1_c, then that means the opponent
-    // and the opponents squares are all p2_c's. So myOpponent needs to be = to p2_c. And vis versa
-    if(player == p1_c){
-        myOpponent = p2_c;
-    }else{
-        myOpponent= p1_c;
-    }
-
-
-    //////board[row][col] = player;           /* Place the player counter   */
-
-    /*for(int i = 0; i<SIZE; i++){
-        for(int j = 0; j<SIZE; j++){
-           if(board[row][col] != ' ')   {
-                //return false;
-                continue;
-            }*/
-
-
-            for(int rowdelta = -1; rowdelta <= 1; rowdelta++) {
-                for (int coldelta = -1; coldelta <= 1; coldelta++) {
-                    if (row + rowdelta < 0 || row + rowdelta >= SIZE || col + coldelta < 0 || col + coldelta >= SIZE || (rowdelta == 0 && coldelta == 0)){
-                        ///return false;
-                        continue;
-                    }
-
-
-                    if (board[row + rowdelta][col + coldelta] == myOpponent) {
-                        printf("Row = %d at start\n", row);
-                        x = row + rowdelta;           /* Move to opponent */
-                        y = col + coldelta;           /* square           */
-
-                        while(1) {// while true. loop until find a breakor exit etc.
-                            printf("X = %d at start\n", x);
-                            x += rowdelta;              /* Move to the      */
-                            y += coldelta;              /* next square      */
-                            printf("X = %d at end\n", x);
-
-
-
-                            if (x < 0 || x >= SIZE || y < 0 || y >= SIZE){
-                                printf("THis is returng invaild move CHECK??  #1\n");
-                                printf("x is %d y is %d\n", x, y);
-                                printf("Row is %d, col is %d\n", row, col);
-                                return false;
-                                break;
-                            }
-
-
-
-                            if (board[x][y] == ' '){
-                                printf("THis is returng invaild move CHECK??  #2\n");
-                                printf("x is %d y is %d\n", x, y);
-                                return false;
-                                break;
-                            }
-
-
-                            if (board[x][y] == player || board[x][y] != ' ' ) {//|| board[x][y] != ' '
-                                ///avail_moves[row][col] = true;
-                                ///moveCounter++;
-                                printf("Successful Move!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-                                return true;
-                                break;                    /* We are done    */
-
-                            }
-
-                        }
-
-                    }
-
-                }
-            }
-
-//these two below might be taken out
-     //   }
-   // }
-    printf("You entered an Incorrect move. Please try again.\n");
-    return false;
-}
 
 void writeToFileOutput(){
     FILE *fPtr;
 
-    if((fPtr = fopen("othello-results.txt", "w")) == NULL){
+    //"othello-results.txt"
+    // read mode of the file is "a" for append so that we keep appending results to the file. If we used "w", we
+    // would be overwriting everything all the time
+    if((fPtr = fopen("C:/Users/James Kelly/CLionProjects/SoftwareEngineeringProject1/Ass2Beginning/inputFiles/othello-results.txt", "a")) == NULL){
         puts("File couldn't open");
     }
     else{
-        //e date and time of the game and the result of the game(winner and score)
-        fprintf(fPtr,"DATE\t\t\tTIME\t\t\tRESULT\n");
+        //print out to file date and time of the game and the result of the game(winner and score)
+        ///fprintf(fPtr,"DATE\t\t\tTIME\t\t\tRESULT\n");
 
         char date[10];
         char time[10];
         char winner[30];
+        char looser[30];
         int score;
 
+        // ask the user for the date and time of the game played
         printf("Please enter the date of this game and then once pressed enter, the time played:\n");
-
        scanf("%s%s", date, time);
 
+       // work out the winner and the looser to print to file
         if(event.scorePlayer1>event.scorePlayer2){
             strcpy(winner, event.player1Name);
             score = event.scorePlayer1;
+            strcpy(looser, event.player2Name);
         }
         else if(event.scorePlayer1<event.scorePlayer2){
             strcpy(winner, event.player2Name);
             score = event.scorePlayer2;
+            strcpy(looser, event.player1Name);
         }else{
             strcpy(winner, "Draw");
             score = event.scorePlayer1;
         }
 
 
-        printf("DATE\t\t\tTIME\t\t\tRESULT\n");
-        printf("%s\t\t%s\t\t%s with %d tokens\n", date, time, winner, score);
-        while(!feof(stdin) ){
-            fprintf(fPtr, "%s\t\t%s\t\t%s with %d tokens\n", date, time, winner, score);
+        // if its a draw, print out a draw to the file
+        if(event.scorePlayer1 == event.scorePlayer2){
+            printf("DATE\t\t\tTIME\t\t\tRESULT\n");
+            printf("%s\t\t%s\t\t%s drew to %s with %d tokens each\n", date, time, winner, looser, score);
+            ///while(!feof(stdin) ){
+            fprintf(fPtr, "%s\t\t%s\t\t%s drew to %s with %d tokens each\n", date, time, winner,looser, score);
             //scanf("%s%s", date, time);
+            ///}
+        }else{// a player has won, so print out who he beat and what the score that he had was.
+            printf("DATE\t\t\tTIME\t\t\tRESULT\n");
+            printf("%s\t\t%s\t\t%s beat %s with %d tokens\n", date, time, winner, looser, score);
+            ///while(!feof(stdin) ){
+            fprintf(fPtr, "%s\t\t%s\t\t%s beat %s with %d tokens\n", date, time, winner,looser, score);
+            //scanf("%s%s", date, time);
+           /// }
+
         }
+
+
         fclose(fPtr);
 
     }
