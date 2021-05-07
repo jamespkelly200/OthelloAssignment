@@ -25,7 +25,7 @@ After a player has chosen a position to move, in the move_choose function, the m
 This is the main funtion of the program. How I went out about this was i started by thinking of the different
 moves that were posible for the player. E.g They could chose to move to an empty space no where near any of the 
 other characters (invalid), or they could move to an empty space in close proximity to the other toekns but that 
-empty space would not be a valid move, or they could move to a space that is empty that is a valid move. 
+empty space would not be a valid move either, or they could move to a space that is empty that is a valid move. 
 They could also move to a place on the board where a token is already taken may it be B or W. 
 So try check all the sqaures on the board that are around the 
 desired move chosen and then work backwards and see which tokens of the opposite player need to be turned over.
@@ -39,9 +39,9 @@ THere might be only 1 or multiple opposition characters that need to be turned o
 We try do this by using multiple for loops looping though all the possible options and checking where that initial move came from.
 
 Since the make_move function was looking for which opposition characters to turn over and implementing the move, the previous step
-was to validate the move entered by the player. If they entered an invalid move, then the make_move function wouldnt work.
+was to validate the move entered by the player. If they entered an invalid move, then the make_move function wouldn't work.
 It would implement a wrong move and the whole game would be messed up. So we need to check the move entered by the player.
-We do this by using the same algorithms as the make_move function as the making the move function still checks all the squares around 
+We do this by using the same algorithms as the make_move function as the function still checks all the squares around 
 the move made. So i thought we could make a similar function that looks at each square and decides if that particular
 square/position is a valid move or not. If it is, make available moves to true of that position. So we use a gloal variable, 
 available moves to set the available moves of all the moves available on that specific turn to true. SO that when we need to 
@@ -49,17 +49,56 @@ validate a move, we dont even need to call the validate move function directly. 
 available_moves. And if it returns true, then we know its valid. If its false we know its invalid and the user must enter another move. 
 The different aspect to this function compared to the make move function is that the make move function just checks the squares around the move
 made, whereas the validate move has to check all the moves. So we use two more nested for loops looping through the whole board
-with all the checks inside these aditional loops. Then instead of changing any opposition characters to the player characters on that
-specific position, just make that position now available. ie. set available moves of that position to true. So now loop through the whole board.
-So all the available moves will have true in bool available_moves. Now just compare the move chosen to available_moves.
-This is how i thought of the validation process.
+with all the checks inside these aditional loops. Then when we find a valid move, instead of changing any opposition characters to the player 
+characters on that specific position, just make that specific position now available. ie. set available moves of that position to true. 
+So now loop through the whole board. So all the available moves will be true in bool available_moves. Now when validating weather a move
+is valid or not, just compare the move chosen to available_moves. If it returns true, its valid, and false, invalid.
+This is how I thought of the validation process.
 
-When i said above that when we need to validate a move, we dont even need to call the validate move function directly because the 
+When I said above that when we need to validate a move, we dont even need to call the validate move function directly because the 
 available_moves variable does the actual validation of the move for us, it is very important that we still call the validate move function. 
-Because 1, it returns a useful feature of the number of moves available as an integer. So when it sets a position on the board to true under
+Because 1, it returns a useful feature of the number of moves available to the player as an integer. So when it sets a position on the board to true under
 available moves, it also increments the number of moves counter. And more importantly, 2, without the function being called, available moves 
 would not be implemented and the checks would not work. So it needs to be called every time a player is about to make a move so that it initializes
 the available moves to true. We call the function at the start of each players turn so that it counts up the available moves to that player and returns 
 it, and also initializes available moves. 
 
+On completion of the programme, when i went through testing stages, one of the last aspects i tested for was, when a player cant make a move and 
+thereby needs to pass. To start off with, if player 1 cant go and needs to pass/ be skipped, that doesnt neccesserily mean that player 2 
+can also go. Maybe player 1 cant go but player 2 also cant go; this means it has to be the end of the game. So what i did for checking purposes,
+was that i checked if player 1 couldnt go. i.e. Validatemove function of player 1 returned 0, but also that validateMove function of player 2
+returned > 0, i.e. number of moves available was not = to 0. Then this is when, and only when player 1 could be skipped and this was done by calling
+goPlayer2. (The same goes for when its player 2s turn.) But, where the problem came in was when i called player 2 function, player 2 would go, but
+afterwards it would go back to within the same function where we just skipped player1 and then actually make the move of player1. (but it would 
+supposed to be player 2s turn) To fix this i created a while loop that would just run while true (until it came accross a break statement) and 
+hence I exectued a break statement after i called the goPlayer2 function. This would now stop the problem of player 1 making the move of player 2s 
+turn when player 1 had been skipped. Now this solved my problem, but also, created a new one. What if, after player 2 made their turn, which was 
+after player1 had been skipped (still inside goPlayer1 function), the game needed to be ended because no player could then make a move. 
+The programe wasnt checking for if both players could both not make a move in the goPlayer function, it was doing that check after each completed 
+move in the main function. So, after player 1 had been skipped and player 2 moved, i needed to check if the game had to come to an end because
+of the resutling move player 2 just made. So now if both players cant go, i.e. both players validateMove returns 0, then the game must end. But i cant
+just end the game using a break statement inside this function, i have to do it another way. So i created a variable called stopGame, and in the main, 
+set stopGame to 0, ran another while loop that ran true while the varible was = 0. So, my made up break statement, was to initialize stopGame to 1 if
+and when the game had to end (within the goPlayer1 function). This whole variable was added just to fix and make the skipping/passing of moves 
+better. Now all the aspects of the program work. 
+Furthermore, after player 2 went (basically as player 1 since he was skipped) we have to call goPlayer1 again within the same function 
+because after we skipped player1 and player 2 went, the program would break out of this function go back to the main and player 2 would go again. 
+We cant have that so player 1 has to go so that the order is kept in tact. So to walk you through why we need to call goPlayer1 again 
+is because coming into this function,:
+1) player 2 would have just gone
+2) then player 1 needed to be skipped
+3) so skip player 1 and goPlayer2 (player 2 has now gone twice in a row)
+4) after goPlayer2, goPlayer1 has to go because outside this function, the next go is player2.
+  If we didnt call goPlayer1, player 2 would have gone 3 times in a row!
+
+For testing purposes for the game and more specifically, when I tested the skipping of turns, I did this by just changing the tokens at the start of the
+game. The actual game starts with Black on position 4e and 5d, and white on position 4d and 5e. To test the passing of moves, i changed the position of
+black under the function start_game to 4b and 5d and white to 4a and 5a. In doing this, when the game started, black could not move, white could move, so 
+black needed to be skipped. White would move, then black and then white again etc. as long as the number of moves for both players was not 0, otherwise the
+game would then end. For testing the actual move was placing the character in the right position and turning over the right opposition characters,
+I just tested the board how it was originally set up. E.g. If black made a move but the white character that was supposed to be flipped didnt flip, then trial and 
+error to see why it didnt flip. 
+
+
+Words: 2000
 
