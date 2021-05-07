@@ -1,14 +1,24 @@
 DATE			TIME			RESULT
 03/05/21		9:31am		Acts beat Romans with 13 tokens
-3May21		5pm		Mark beat Luke with 13 tokens
-4May22		6am		Mathew beat John with 13 tokens
-5May20		7pm		Timothy beat Hagai with 13 tokens
+3May21		    5pm		    Mark beat Luke with 13 tokens
+4May22		    6am	        Mathew beat John with 13 tokens
+5May20		    7pm		    Timothy beat Hagai with 13 tokens
 03/05/21		7:30pm		James beat Hebrews with 13 tokens
-04/05/21		8am		Chorinthians beat Solomon with 13 tokens
+04/05/21		8am		    Chorinthians beat Solomon with 13 tokens
 16/05/21		11:59pm		Simon beat Isiah with 13 tokens
 12/01/45		11:00am		Joseph beat Benjamin with 13 tokens
 05/02/01		10:07am		Simeon beat Juda with 13 tokens
-r/21		3/September/21		Abraham beat Isaac with 13 tokens
 4April20		10:21am		David beat Goliath with 13 tokens
 04/08/18		00:00		Jonah beat Wale with 13 tokens
 03/09/17		00:05		Daniel beat LionsDen with 13 tokens
+15/12/12		12:12pm		Samson beat Delilah with 13 tokens
+08/08/09		7:57am		Jimmy beat Oscar with 34 tokens
+07/07/07		7pm		    federer beat nadal with 13 tokens
+13/12/12		8:08pm		Windows beat Mac with 13 tokens
+5/4/21		    10:40am		Owen beat Amos with 5 tokens
+05/04/20		10:59am		James drew to Luke with 2 tokens each
+09/09/09		9:09pm		Sean drew to Jo with 2 tokens each
+06/06/07		03:03am		Ruth beat Jobe with 13 tokens
+05/05/05		4:04am		James beat Luke with 13 tokens
+05/05/21		2:42pm		Jesus beat AngelGabriel with 13 tokens
+01/01/01		01:01am		James beat Luke with 13 tokens

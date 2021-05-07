@@ -1,3 +1,0 @@
-C:/Users/James Kelly/CLionProjects/SoftwareEngineeringProject1/Ass2Beginning/cmake-build-debug/CMakeFiles/Ass2Beginning.dir
-C:/Users/James Kelly/CLionProjects/SoftwareEngineeringProject1/Ass2Beginning/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/James Kelly/CLionProjects/SoftwareEngineeringProject1/Ass2Beginning/cmake-build-debug/CMakeFiles/rebuild_cache.dir

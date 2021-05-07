@@ -1,4 +1,6 @@
-// Othello J.K
+// Othello James Kelly J.K
+// 5/5/2021
+// 20200666 Software Engineering Project Assignment 2
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -34,6 +36,12 @@ struct position{
     char y;
 };struct position Position;
 
+int stopGame=0;// this entire variable's only purpose is for the passing of moves between players and if after a move has been passed
+// and then the other player moved, the game has to end. This variable helps us do that.
+// I have added this right at the end of my program when i was doing testing and when a player needed to pass/ be skipped,
+// the program would crash. So now with this feature, everything works and now including when a player has to be skipped
+// because he cant move.
+
 // struct holds players names and scores as well as their black and white characters
 struct game{
     char player1Name[20];
@@ -53,27 +61,31 @@ int main() {
 
     // while the whole board is not filled (both scores added together equal to 64), or while a players score is not 0, Continue with the game.
     // If one of these conditions is met, then the game is over.
-    while((event.scorePlayer1 != 32 && event.scorePlayer2!= 32) || (event.scorePlayer1+event.scorePlayer2 != 64) || (event.scorePlayer1 != 0) || (event.scorePlayer2 != 0) ){// || (countPiecesWhite() != 0) || (countPiecesBlack()!=0)
+while(stopGame == 0){
+    while ((event.scorePlayer1 != 32 && event.scorePlayer2 != 32) || (event.scorePlayer1 + event.scorePlayer2 != 64) ||
+           (event.scorePlayer1 != 0) ||
+           (event.scorePlayer2 != 0)) {// || (countPiecesWhite() != 0) || (countPiecesBlack()!=0)
 
         // call goPlayer1 function to go through the process of making the move for player 1
-            goPlayer1();
+        goPlayer1();
 
-            // VERY IMPORTANT
-            // After the player has moved, the scores and the board have been altered, therefore, if statements
-            // have to be used to check if a player can or cant go after a move has just been made.
-            // So check if both players cant go!! If this is the case, then the game has to end so check why the game
-            // has to end. It could be because player 1 has no pieces left and therefore cant make any move, which means
-            // player 2 also cant make any move; both players validate move function returns 0. And visa versa.
-            // Or, while both players scores are above 0 and not equal to 0, it could have ended because both players
-            // just cant make any moves. So this instance, the game ends in a draw.
-        if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0){
-            if(event.scorePlayer1 == 0 ){
+        // VERY IMPORTANT
+        // After the player has moved, the scores and the board have been altered, therefore, if statements
+        // have to be used to check if a player can or cant go after a move has just been made.
+        // So check if both players cant go!! If this is the case, then the game has to end so check why the game
+        // has to end. It could be because player 1 has no pieces left and therefore cant make any move, which means
+        // player 2 also cant make any move; both players validate move function returns 0. And visa versa.
+        // Or, while both players scores are above 0 and not equal to 0, it could have ended because both players
+        // just cant make any moves. So this instance, the game ends in a draw.
+        if ((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0) {
+            stopGame=1;
+            if (event.scorePlayer1 == 0) {
                 printf("Game ends because %s has 0 pieces left!! (#1 break)\n", event.player1Name);
                 break;
-            }else if(event.scorePlayer2 == 0){
+            } else if (event.scorePlayer2 == 0) {
                 printf("Game ends because %s has 0 pieces left!! (#2 break)\n", event.player2Name);
                 break;
-            }else{
+            } else {
                 printf("Both players cant go!! Therefore, the game ends (#3 break)\n");
                 break;
             }
@@ -85,14 +97,15 @@ int main() {
 
         // Once again, just like above, the same checks have to be used to see if the game has now ended on that specific move \
         // just made by player 2. So go through same checks again.
-        if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0){
-            if(event.scorePlayer1 == 0 ){
+        if ((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0) {
+            stopGame=1;
+            if (event.scorePlayer1 == 0) {
                 printf("Game ends because %s has 0 pieces left!! (#4 break)\n", event.player1Name);
                 break;
-            }else if(event.scorePlayer2 == 0){
+            } else if (event.scorePlayer2 == 0) {
                 printf("Game ends because %s has 0 pieces left!! (#5 break)\n", event.player2Name);
                 break;
-            }else{
+            } else {
                 printf("Both players cant go!! Therefore, the game ends (#6 break)\n");
                 break;
             }
@@ -100,6 +113,7 @@ int main() {
 
         // checks ended so continue in while loop until the condition/break is met.
     }
+}
     // while loop has been exited. This means the game has ended.
     // SO, print the final board and the scores of both players.
     printf("The final board is:\n");
@@ -148,11 +162,14 @@ void start_game(){// Start the game function
 
     int middle = SIZE / 2;// declare middle variable as the middle of the board, (SIZE of Board/2)
 
+    // -4 -3 0 -3
     Othello.othello[middle][middle] = p2_c;// Othello board struct of middle, middle = W
     Othello.othello[middle - 1][middle - 1] = p2_c;// Othello board struct of middle-1, middle-1 = W
 
     Othello.othello[middle][middle - 1] = p1_c;// Othello board struct of middle, middle-1 = B
     Othello.othello[middle - 1][middle] = p1_c;// Othello board struct of middle-1, middle = B
+
+    //Othello.othello[middle - 1-2][middle-1] = p2_c; // this was just used for testing purposes.
 }
 void display(char board[][SIZE])// display the board function
 {
@@ -195,8 +212,10 @@ void display(char board[][SIZE])// display the board function
     printf("\n");
 }
 
-void goPlayer1(){
-    // This is just a ssmall extra feature that just tells the user how many available moves they can make!!
+void goPlayer1() {
+    // This is just a small extra feature that just tells the user how many available moves they can make!!
+    // But, also, calling the number of moves available initializes the bool available_moves variable to true on the valid moves.
+    // THis is ver important, without it, the program would crash.
     printf("%s You have %d moves available\n", event.player1Name, validateMove(Othello.othello, event.p1_c));
     // validate move returns an integer of the number of moves available. If it returns 0, there is no moves available
 
@@ -211,11 +230,33 @@ void goPlayer1(){
     // SO we add in the part of the check:
     // "&& (validateMove(Othello.othello, moves, event.p2_c)) != 0 )"
     // to make sure that available moves for the other player exist.
-    if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) != 0 ){// while....  != true
+    while (1) {// this is just so that when we hit a break statement, we can break out of this function
+
+    if ((validateMove(Othello.othello, event.p1_c)) == 0 &&
+        (validateMove(Othello.othello, event.p2_c)) != 0) {// if player 1 cant go but player 2 can go:
         printf("There is no available moves for %s!! SO, %s will be skipped\n", event.player1Name, event.player1Name);
         printf("It is now %s's turn\n", event.player2Name);
-        goPlayer2();
-    }else{// so if player 1 has available moves > 0 and can play, (i.e they dont need to pass) then choose the move
+        goPlayer2();// make player 2 go.
+        // but straight after player 2 has gone, we have to check again if any one can move and if the game should now be over.
+        if((validateMove(Othello.othello, event.p1_c)) == 0 && (validateMove(Othello.othello, event.p2_c)) == 0) {
+        stopGame=1;// if both players at this point cant go, then stopGame = 1 to end the while in the main function
+        break;
+        ///break;
+        }
+        //checkStatementsAfterturn();
+        ///if((validateMove(Othello.othello, event.p1_c)) != 0 ) {
+            goPlayer1();// we have to call goPlayer1 again because after we skipped player1 and player 2 went, the
+            // program would break out of this function go back to the main and player 2 would go again. We cant have that
+            // so player 1 has to go so that the order is kept in tact. So to walk you through why we need to call
+            // goPlayer1 again is because coming into this function,:
+            // 1) player 2 would have just gone
+            // 2) then player 1 needed to be skipped
+            // 3) so skip player 1 and goPlayer2 (player 2 has now gone twice in a row)
+            // 4) after goPlayer2, goPlayer1 has to go because outside this function, the next go is player2.
+            // If we didnt call goPlayer1, player 2 would have gone 3 times in a row!
+        ///}
+        break;
+    } else {// so if player 1 has available moves > 0 and can play, (i.e they dont need to pass) then choose the move
         move_choose(event.p1_c);// call fucntion move_choose.
     }
 
@@ -223,7 +264,7 @@ void goPlayer1(){
     // the available_moves variable only stores true or false and returns true or false depending
     // on if the move chosen is valid or not. This has been implemented in the validateMove function.
     // keep asking for the players move until the available moves returns true.
-    while(available_moves[Position.x][Position.y] != true){// while user has entered wrong move:
+    while (available_moves[Position.x][Position.y] != true) {// while user has entered wrong move:
         printf("YOU HAVE MADE AN INCORRECT MOVE. PLEASE TRY AGAIN!!!\n");
         move_choose(event.p1_c);//  implement function move_choose again.
     }
@@ -235,10 +276,14 @@ void goPlayer1(){
     countPiecesBlack();// count black and white pieces
     countPiecesWhite();
     display(Othello.othello);// display board again after move made successfully
-    printf("%s's score is %d\n\n",event.player1Name, event.scorePlayer1);// print out their score.
+    printf("%s's score is %d\n\n", event.player1Name, event.scorePlayer1);// print out their score.
+    break;
+    }
 }
 
 void goPlayer2(){
+    // calling the number of moves available initializes the bool available_moves variable to true on the valid moves.
+    // THis is ver important, without it, the program would crash.
     printf("%s You have %d moves available\n", event.player2Name, validateMove(Othello.othello, event.p2_c));
 
     // THis if statement below is basically the "pass" aspect of Othello. THe computer does the pass for the user/player
@@ -252,10 +297,21 @@ void goPlayer2(){
     // SO we add in the part of the check:
     // "&& (validateMove(Othello.othello, moves, event.p1_c)) != 0 )"
     // to make sure that available moves for the other player exist.
+
+    while (1) {// this is just so that when we hit a break statement, we can break out of this function
     if((validateMove(Othello.othello, event.p2_c)) == 0 && (validateMove(Othello.othello, event.p1_c)) != 0){// while....  != true
         printf("There is no available moves for %s!! SO, %s will be skipped\n", event.player2Name, event.player2Name);
         printf("It is now %s's turn\n", event.player1Name);
         goPlayer1();
+        // but straight after player 2 has gone, we have to check again if any one can move and if the game should now be over.
+        if((validateMove(Othello.othello, event.p2_c)) == 0 && (validateMove(Othello.othello, event.p1_c)) == 0) {
+            stopGame=1;// if both players at this point cant go, then stopGame = 1
+            break;
+        }
+        ///if((validateMove(Othello.othello, event.p2_c)) != 0 ) {
+        goPlayer2();
+        ///}
+        break;
     }else{// so if player 2 has available moves > 0 and can play, (i.e they dont need to pass) then choose the move
         move_choose(event.p2_c);// call function
     }
@@ -276,6 +332,8 @@ void goPlayer2(){
     countPiecesWhite();
     display(Othello.othello);// display board again after move made succesfully
     printf("%s's score is %d\n\n",event.player2Name, event.scorePlayer2);// print out their score.
+        break;
+    }
 }
 
 void move_choose(char player){// this function asks the player where they want to move characters.
@@ -543,7 +601,6 @@ void writeToFileOutput(){
     }
     else{
         //print out to file date and time of the game and the result of the game(winner and score)
-        ///fprintf(fPtr,"DATE\t\t\tTIME\t\t\tRESULT\n");
 
         char date[10];
         char time[10];
@@ -566,7 +623,8 @@ void writeToFileOutput(){
             score = event.scorePlayer2;
             strcpy(looser, event.player1Name);
         }else{
-            strcpy(winner, "Draw");
+            strcpy(winner, event.player1Name);
+            strcpy(looser, event.player2Name);
             score = event.scorePlayer1;
         }
 
@@ -575,18 +633,13 @@ void writeToFileOutput(){
         if(event.scorePlayer1 == event.scorePlayer2){
             printf("DATE\t\t\tTIME\t\t\tRESULT\n");
             printf("%s\t\t%s\t\t%s drew to %s with %d tokens each\n", date, time, winner, looser, score);
-            ///while(!feof(stdin) ){
             fprintf(fPtr, "%s\t\t%s\t\t%s drew to %s with %d tokens each\n", date, time, winner,looser, score);
             //scanf("%s%s", date, time);
-            ///}
         }else{// a player has won, so print out who he beat and what the score that he had was.
             printf("DATE\t\t\tTIME\t\t\tRESULT\n");
             printf("%s\t\t%s\t\t%s beat %s with %d tokens\n", date, time, winner, looser, score);
-            ///while(!feof(stdin) ){
             fprintf(fPtr, "%s\t\t%s\t\t%s beat %s with %d tokens\n", date, time, winner,looser, score);
             //scanf("%s%s", date, time);
-           /// }
-
         }
 
 

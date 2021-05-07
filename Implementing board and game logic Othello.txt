@@ -1,0 +1,65 @@
+James Kelly  20200666   Othello Implementation
+
+How i implemented most of the logic was just through a lot of trial and error and trying to
+do everything step by step. Once that was working, move on to the next function or algorithm
+and brainstorm that particlar challenge until it was working. 
+To start off, initializing the board, I just used the process of using multiple print statements
+to print out the board from the top down by trial and error. Once i got the first line, which was
+the heading of the letters, i then tried to print each row and collum using a series of for loops
+printing "|" and "---" for the edges of the board and empty spaces "  " in all the blocks. 
+Once i was satisfied with how the board lookied, I wanted to set up the start of the board 
+which has 2 characters of each player in the center of the board. To do that, i first used a
+double nested for loop looping a total of 64 times to initialize each square on the board to empty 
+on the struct board Othello. After that, i worked out what position on the board the 4 tokens should 
+be placed and then placed them individually. Now the board is ready to play.
+
+In terms of the players, i stored them in a struct along with their scores and what character they were (B or W).
+So whenever i needed to print a players name or their score, i could just call the struct. After every move made,
+the players scores were both updated in the struct and printed out. I updated the scores by using functions called
+countPiecesBlack and countPiecesWhite which would go through the whole Othello board struct and look at each square 
+individually out of the 64 of them, and if that square contained black, B, the black counter would increment. 
+So at the end of the function, we would know the amount of black pieces on the board and then just display it. 
+And vis versa with the white pieces. 
+
+After a player has chosen a position to move, in the move_choose function, the make_move function kicks in.
+This is the main funtion of the program. How I went out about this was i started by thinking of the different
+moves that were posible for the player. E.g They could chose to move to an empty space no where near any of the 
+other characters (invalid), or they could move to an empty space in close proximity to the other toekns but that 
+empty space would not be a valid move, or they could move to a space that is empty that is a valid move. 
+They could also move to a place on the board where a token is already taken may it be B or W. 
+So try check all the sqaures on the board that are around the 
+desired move chosen and then work backwards and see which tokens of the opposite player need to be turned over.
+So start by just implementing the move on the board since by this stage a check would have been made already
+validating the move or not. By the time this function is called, a valid move has been entered.
+So if the player chose to move to 5c for example, make the board (Othello.othello) of position 5c = to the players character. 
+Now check each of the squares around the position of the character to see which opposition characters need to be overturned.
+If you find a character that needs to be turned, then change it. Change any opposition characters to the player characters on that
+specific position only if it needs to be turned over!!
+THere might be only 1 or multiple opposition characters that need to be turned over, but there will be a minimum of 1 since it is a valid move. 
+We try do this by using multiple for loops looping though all the possible options and checking where that initial move came from.
+
+Since the make_move function was looking for which opposition characters to turn over and implementing the move, the previous step
+was to validate the move entered by the player. If they entered an invalid move, then the make_move function wouldnt work.
+It would implement a wrong move and the whole game would be messed up. So we need to check the move entered by the player.
+We do this by using the same algorithms as the make_move function as the making the move function still checks all the squares around 
+the move made. So i thought we could make a similar function that looks at each square and decides if that particular
+square/position is a valid move or not. If it is, make available moves to true of that position. So we use a gloal variable, 
+available moves to set the available moves of all the moves available on that specific turn to true. SO that when we need to 
+validate a move, we dont even need to call the validate move function directly. We just compare the move chosen to the variable, 
+available_moves. And if it returns true, then we know its valid. If its false we know its invalid and the user must enter another move. 
+The different aspect to this function compared to the make move function is that the make move function just checks the squares around the move
+made, whereas the validate move has to check all the moves. So we use two more nested for loops looping through the whole board
+with all the checks inside these aditional loops. Then instead of changing any opposition characters to the player characters on that
+specific position, just make that position now available. ie. set available moves of that position to true. So now loop through the whole board.
+So all the available moves will have true in bool available_moves. Now just compare the move chosen to available_moves.
+This is how i thought of the validation process.
+
+When i said above that when we need to validate a move, we dont even need to call the validate move function directly because the 
+available_moves variable does the actual validation of the move for us, it is very important that we still call the validate move function. 
+Because 1, it returns a useful feature of the number of moves available as an integer. So when it sets a position on the board to true under
+available moves, it also increments the number of moves counter. And more importantly, 2, without the function being called, available moves 
+would not be implemented and the checks would not work. So it needs to be called every time a player is about to make a move so that it initializes
+the available moves to true. We call the function at the start of each players turn so that it counts up the available moves to that player and returns 
+it, and also initializes available moves. 
+
+
